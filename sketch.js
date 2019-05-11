@@ -1,38 +1,64 @@
+// The position of the player
+var x = 100;
+var y = 100;
+// The orientation of the player
+var dir = 90; // 0 is up, 90 is right ...
+// How far the player can see
+var sight = 1000;
 
-// Overhead view
-var s = function( p ) {
-	var x = 100; 
-	var y = 100;
-	p.setup = function() {
-		p.createCanvas(400, 400);
-	};
+// Runs one time on start
+function setup()
+{
+	angleMode(DEGREES);
 
-	p.draw = function() {
-		p.background(0);
-		p.fill(255);
-		p.rect(x,y,50,50);
-	};
-};
-var myp5 = new p5(s, 'c1');
+	// Create the canvas
+	createCanvas(400, 800);
+}
 
-// First Person View
-var t = function( p ) { 
-	var x = 100.0; 
-	var y = 100; 
-	var speed = 2.5; 
-	p.setup = function() {
-		p.createCanvas(400, 400);
-	};
+// Loop
+function draw()
+{
+	// Clear screen
+	background(15);
 
-	p.draw = function() {
-		p.background(100);
-		p.fill(1);
-		x += speed; 
-		if(x > p.width){
-		x = 0; 
-		}
-		p.ellipse(x,y,50,50);
+	// Move player
+	getPlayerMovement();
+	drawPlayer();
 
-	};
-};
-var myp5 = new p5(t, 'c2');
+	// Draw dividing line
+	stroke(255);
+	line(0, 400, 400, 400)
+}
+
+function getPlayerMovement()
+{
+	push();
+	// Move to the player
+	translate(x,y);
+	// Get the direction the player is facing
+	dir = atan2(mouseY - y, mouseX - x) + 90;
+	pop();
+}
+
+// Function to draw the player
+function drawPlayer()
+{
+	push();
+
+	// Move to the player
+	translate(x, y);
+	// Rotate the player
+	rotate(dir);
+
+	// Draw the player
+	stroke(255);
+	noFill();
+	beginShape();
+	vertex(0, -10);
+	vertex(-5, 10);
+	vertex(0, 5);
+	vertex(5, 10);
+	endShape(CLOSE);
+	
+	pop();
+}
