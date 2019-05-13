@@ -30,6 +30,7 @@ function draw()
 	line(0, 400, 400, 400)
 }
 
+// Function to get player direction
 function getPlayerMovement()
 {
 	push();
@@ -38,6 +39,28 @@ function getPlayerMovement()
 	// Get the direction the player is facing
 	dir = atan2(mouseY - y, mouseX - x) + 90;
 	pop();
+}
+
+// Function to move player based on keyboard
+function keyPressed()
+{
+	console.log(dir);
+	if(keyCode === LEFT_ARROW)
+	{
+		// Move player in direction they're facing
+	}
+	if(keyCode === RIGHT_ARROW)
+	{
+		
+	}
+	if(keyCode === UP_ARROW)
+	{
+		
+	}
+	if(keyCode === DOWN_ARROW)
+	{
+		
+	}
 }
 
 // Function to draw the player
