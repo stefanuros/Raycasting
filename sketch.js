@@ -20,7 +20,7 @@ var player = {
 	// The field of view of the player in degrees
 	fov: 90,
 	// How fast it turns
-	turnSpeed: 2
+	turnSpeed: 3
 };
 
 
