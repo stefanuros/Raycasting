@@ -201,7 +201,10 @@ function keyPressed()
 // Does the same as pressing forward
 function mousePressed()
 {
-	mp = true;
+	if(mouseActive)
+	{
+		mp = true;
+	}
 }
 
 // Same as releasing forward
