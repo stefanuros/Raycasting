@@ -52,7 +52,22 @@ var kp = [false, false, false, false];
 var mp = false;
 
 // The list of lines that will be checked against raycasting
-var terrain = [];
+var terrain = [
+	[0, 0, 400, 0],
+	[400, 0, 400, 400],
+	[400, 400, 0, 400],
+	[0, 400, 0, 0],
+	[30, 100, 100, 60],
+	[60, 250, 170, 300],
+	[260, 150, 370, 200],
+	[300, 120, 330, 300],
+	[100, 200, 200, 100],
+	[370, 200, 330, 300],
+	[270, 50, 350, 70],
+	[200, 200, 250, 350],
+	[160, 30, 230, 150],
+	[50, 370, 100, 320]
+];
 
 // Runs one time on start
 function setup()
@@ -76,6 +91,9 @@ function draw()
 	// Clear screen
 	background(15);
 
+	// Draw terrain
+	drawTerrain();
+
 	// Move player
 	getPlayerRotation();
 	getPlayerMovement();
@@ -90,6 +108,18 @@ function draw()
 
 	// Get the player speed from the slider
 	player.speed = form.speedSlider.value();
+}
+
+// Function for drawing the terrain
+function drawTerrain()
+{
+	for(var i = 0; i < terrain.length; i++)
+	{
+		push();
+		
+		stroke(255);
+		line(terrain[i][0], terrain[i][1], terrain[i][2], terrain[i][3])
+	}
 }
 
 // Function to get player direction
