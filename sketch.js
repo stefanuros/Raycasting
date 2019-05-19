@@ -48,6 +48,9 @@ var specs = {
 var kp = [false, false, false, false];
 var mp = false;
 
+// The list of lines that will be checked against raycasting
+var terrain = [];
+
 // Runs one time on start
 function setup()
 {
