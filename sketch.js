@@ -1,10 +1,46 @@
-// The position of the player
-var x = 100;
-var y = 100;
-// The orientation of the player
-var dir = 90; // 0 is up, 90 is right ...
-// How far the player can see
-var sight = 1000;
+
+var player = {
+	// The position of the player
+	x: 100,
+	y: 100,
+	// The orientation of the player
+	dir: 90, // 0 is up, 90 is right ...
+	// How far the player can see
+	sight: 1000,
+	// How fast the player moves
+	speed: 1
+}
+
+// Min and Max of both top and bottom
+var specs = {
+	total: {
+		width: 400,
+		height: 800
+	},
+	top: {
+		x: {
+			min: 0,
+			max: 400
+		},
+		y: {
+			min: 0,
+			max: 400
+		}
+	},
+	bot: {
+		x: {
+			min: 0,
+			max: 400
+		},
+		y: {
+			min: 400,
+			max: 800
+		}
+	}
+}
+
+// Variable to keep track of which keys are pressed. Starts with up and moves cw
+var kp = [false, false, false, false];
 
 // Runs one time on start
 function setup()
@@ -12,7 +48,7 @@ function setup()
 	angleMode(DEGREES);
 
 	// Create the canvas
-	createCanvas(400, 800);
+	createCanvas(specs.total.width, specs.total.height);
 }
 
 // Loop
@@ -22,45 +58,105 @@ function draw()
 	background(15);
 
 	// Move player
+	getPlayerRotation();
 	getPlayerMovement();
 	drawPlayer();
 
 	// Draw dividing line
 	stroke(255);
-	line(0, 400, 400, 400)
+	line(0, specs.total.height/2, specs.total.width, specs.total.height/2);
 }
 
 // Function to get player direction
-function getPlayerMovement()
+function getPlayerRotation()
 {
 	push();
 	// Move to the player
-	translate(x,y);
+	translate(Math.floor(player.x), Math.floor(player.y));
 	// Get the direction the player is facing
-	dir = atan2(mouseY - y, mouseX - x) + 90;
+	player.dir = atan2(mouseY - Math.floor(player.y), mouseX - Math.floor(player.x)) + 90;
 	pop();
 }
 
-// Function to move player based on keyboard
+// Functions to figure out which direction to move the player
 function keyPressed()
 {
-	console.log(dir);
-	if(keyCode === LEFT_ARROW)
+	if(keyCode === UP_ARROW || keyCode === 87)
 	{
-		// Move player in direction they're facing
+		kp[0] = true;
 	}
-	if(keyCode === RIGHT_ARROW)
+	if(keyCode === RIGHT_ARROW || keyCode === 68)
 	{
-		
+		kp[1] = true;
 	}
-	if(keyCode === UP_ARROW)
+	if(keyCode === DOWN_ARROW || keyCode === 83)
 	{
-		
+		kp[2] = true;
 	}
-	if(keyCode === DOWN_ARROW)
+	if(keyCode === LEFT_ARROW || keyCode === 65)
 	{
-		
+		kp[3] = true;
 	}
+}
+
+function keyReleased()
+{
+	if(keyCode === UP_ARROW || keyCode === 87)
+	{
+		kp[0] = false;
+	}
+	if(keyCode === RIGHT_ARROW || keyCode === 68)
+	{
+		kp[1] = false;
+	}
+	if(keyCode === DOWN_ARROW || keyCode === 83)
+	{
+		kp[2] = false;
+	}
+	if(keyCode === LEFT_ARROW || keyCode === 65)
+	{
+		kp[3] = false;
+	}
+}
+
+function getPlayerMovement()
+{
+	// Convert degrees to radians
+	var rad = (player.dir) * PI / 180;
+
+	var newX = player.x;
+	var newY = player.y;
+
+	// UP
+	if(kp[0])
+	{
+		newX += player.speed * Math.sin(rad);
+		newY -= player.speed * Math.cos(rad);
+	}
+
+	// RIGHT
+	if(kp[1])
+	{
+		newX += player.speed * Math.sin(rad + (90 * PI / 180));
+		newY -= player.speed * Math.cos(rad + (90 * PI / 180));
+	}
+
+	// DOWN
+	if(kp[2])
+	{
+		newX += player.speed * Math.sin(rad + (180 * PI / 180));
+		newY -= player.speed * Math.cos(rad + (180 * PI / 180));
+	}
+
+	// LEFT
+	if(kp[3])
+	{
+		newX += player.speed * Math.sin(rad + (270 * PI / 180));
+		newY -= player.speed * Math.cos(rad + (270 * PI / 180));
+	}
+
+	player.x = newX;
+	player.y = newY;
 }
 
 // Function to draw the player
@@ -69,9 +165,9 @@ function drawPlayer()
 	push();
 
 	// Move to the player
-	translate(x, y);
+	translate(Math.floor(player.x), Math.floor(player.y));
 	// Rotate the player
-	rotate(dir);
+	rotate(player.dir);
 
 	// Draw the player
 	stroke(255);
