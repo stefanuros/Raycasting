@@ -9,7 +9,12 @@ var player = {
 	sight: 1000,
 	// How fast the player moves
 	speed: 1
-}
+};
+
+// An object of all of the form features (buttons, sliders, etc)
+var form = {
+	resetPlayerButton: null
+};
 
 // Min and Max of both top and bottom
 var specs = {
@@ -37,10 +42,11 @@ var specs = {
 			max: 800
 		}
 	}
-}
+};
 
 // Variable to keep track of which keys are pressed. Starts with up and moves cw
 var kp = [false, false, false, false];
+var mp = false;
 
 // Runs one time on start
 function setup()
@@ -49,6 +55,10 @@ function setup()
 
 	// Create the canvas
 	createCanvas(specs.total.width, specs.total.height);
+
+	// Create the reset player button
+	form.resetPlayerButton = createButton("Reset Player");
+	form.resetPlayerButton.mousePressed(resetPlayer);
 }
 
 // Loop
@@ -61,6 +71,9 @@ function draw()
 	getPlayerRotation();
 	getPlayerMovement();
 	drawPlayer();
+
+	// Drawing the first person view
+	drawFirstPerson();
 
 	// Draw dividing line
 	stroke(255);
@@ -99,6 +112,18 @@ function keyPressed()
 	}
 }
 
+// Does the same as pressing forward
+function mousePressed()
+{
+	mp = true;
+}
+
+// Same as releasing forward
+function mouseReleased()
+{
+	mp = false;
+}
+
 function keyReleased()
 {
 	if(keyCode === UP_ARROW || keyCode === 87)
@@ -128,7 +153,7 @@ function getPlayerMovement()
 	var newY = player.y;
 
 	// UP
-	if(kp[0])
+	if(kp[0] || mp)
 	{
 		newX += player.speed * Math.sin(rad);
 		newY -= player.speed * Math.cos(rad);
@@ -159,6 +184,13 @@ function getPlayerMovement()
 	player.y = newY;
 }
 
+// Function that brings the player back to the canvas
+function resetPlayer()
+{
+	player.x = 100;
+	player.y = 100;
+}
+
 // Function to draw the player
 function drawPlayer()
 {
@@ -180,4 +212,16 @@ function drawPlayer()
 	endShape(CLOSE);
 	
 	pop();
+}
+
+// Function that draws the first person view
+function drawFirstPerson()
+{
+	push();
+
+	fill(0);
+	stroke(0);
+	rect(specs.bot.x.min, specs.bot.y.min, specs.bot.x.max, specs.bot.y.max);
+	
+	pop()
 }
