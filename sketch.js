@@ -3,17 +3,20 @@ var player = {
 	// The position of the player
 	x: 100,
 	y: 100,
-	// The orientation of the player
+	// The orientation of the player in degrees
 	dir: 90, // 0 is up, 90 is right ...
 	// How far the player can see
 	sight: 1000,
 	// How fast the player moves
-	speed: 1
+	speed: 1,
+	// The field of view of the player in degrees
+	fov: 90
 };
 
 // An object of all of the form features (buttons, sliders, etc)
 var form = {
-	resetPlayerButton: null
+	resetPlayerButton: null,
+	speedSlider: null
 };
 
 // Min and Max of both top and bottom
@@ -62,6 +65,9 @@ function setup()
 	// Create the reset player button
 	form.resetPlayerButton = createButton("Reset Player");
 	form.resetPlayerButton.mousePressed(resetPlayer);
+
+	// Creating a slider for speed
+	form.speedSlider = createSlider(1, 3, 1, 1);
 }
 
 // Loop
@@ -81,6 +87,9 @@ function draw()
 	// Draw dividing line
 	stroke(255);
 	line(0, specs.total.height/2, specs.total.width, specs.total.height/2);
+
+	// Get the player speed from the slider
+	player.speed = form.speedSlider.value();
 }
 
 // Function to get player direction
@@ -183,8 +192,15 @@ function getPlayerMovement()
 		newY -= player.speed * Math.cos(rad + (270 * PI / 180));
 	}
 
-	player.x = newX;
-	player.y = newY;
+	// Dont change position if player is near mouse to prevent jittering
+	if(abs(player.x-mouseX) > 10)
+	{
+		player.x = newX;
+	}
+	if(abs(player.y-mouseY) > 10)
+	{
+		player.y = newY;
+	}
 }
 
 // Function that brings the player back to the canvas
