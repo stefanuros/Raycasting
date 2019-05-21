@@ -14,11 +14,13 @@ var player = {
 	// The orientation of the player in degrees
 	dir: 90, // 0 is up, 90 is right ...
 	// How far the player can see
-	sight: 1000,
+	sight: 150,
 	// How fast the player moves
 	speed: 1,
 	// The field of view of the player in degrees
 	fov: 90,
+	// How often a new ray is cast (lower is more dense)
+	fovDensity: 1,
 	// How fast it turns
 	turnSpeed: 3
 };
@@ -28,6 +30,10 @@ var player = {
 var form = {
 	resetPlayerButton: null,
 	speedSlider: null,
+	turningSlider: null,
+	distanceSlider: null,
+	fovSlider: null,
+	rayDensitySlider: null,
 	mouseActive: null
 };
 
@@ -92,18 +98,43 @@ function setup()
 	// Create the reset player button
 	form.resetPlayerButton = createButton("Reset Player");
 	form.resetPlayerButton.mousePressed(resetPlayer);
-
-	// Creating a slider for speed
-	form.speedSlider = createSlider(1, 3, 1, 1);
+	form.resetPlayerButton.position(450, 15);
 
 	// Configuring mouse movement
 	form.mouseActive = createCheckbox("Use mouse", mouseActive);
 	form.mouseActive.changed(checkIfMouseActive);
+	form.mouseActive.position(600, 15);
+
+	// Creating a slider for speed
+	createP('Speed').position(600, 50);
+	form.speedSlider = createSlider(1, 3, 1, 1);
+	form.speedSlider.position(450, 65);
+	
+	// Creating a slider for turning speed
+	createP('Turning Speed').position(600, 100);
+	form.turningSlider = createSlider(1, 3, 1, 1);
+	form.turningSlider.position(450, 115);
+
+	// Creating a slider for distance
+	createP('Distance').position(600, 150);
+	form.distanceSlider = createSlider(50, 400, 100, 1);
+	form.distanceSlider.position(450, 165);
+
+	// Creating a slider for field of view
+	createP('Field of View').position(600, 200);
+	form.fovSlider = createSlider(60, 120, 90, 1);
+	form.fovSlider.position(450, 215);
+
+	// Creating a slider for ray density
+	createP('Ray Density').position(600, 250);
+	form.rayDensitySlider = createSlider(1, 5, 1, 1);
+	form.rayDensitySlider.position(450, 265);
 }
 
 // Loop
 function draw()
 {
+
 	// Clear screen
 	background(15);
 
@@ -129,7 +160,18 @@ function draw()
 	line(0, specs.total.height/2, specs.total.width, specs.total.height/2);
 
 	// Get the player speed from the slider
+	getSliderInfo();
+}
+
+// Getting info from sliders
+function getSliderInfo()
+{
 	player.speed = form.speedSlider.value();
+	player.turnSpeed = form.turningSlider.value();
+	player.sight = form.distanceSlider.value();
+	player.fov = form.fovSlider.value();
+	player.fovDensity = form.rayDensitySlider.value();
+	
 }
 
 function checkIfMouseActive()
@@ -164,6 +206,41 @@ function drawRays()
 	point(player.x, player.y);
 	pop();
 	push();
+
+	push();
+
+	// Get starting dir for rays
+	var startDir = player.dir - (player.fov / 2);
+
+	// Loop through rays
+	for(var i = 0; i < player.fov; i += player.fovDensity)
+	{
+		// Adjust the angle for the ray
+		var rayDir = ((startDir + i + 90) % 360) - 90;
+
+		// The variable that keeps track of how far to draw the ray
+		var distance = player.sight;
+
+		for(var t = 0; t < terrain.length; t++)
+		{
+
+			// TODO get the distance to this line
+		}
+
+		// Draw the line in the right direction to the max distance
+		stroke('rgba(255,0,0,0.25)');
+
+		var rad = (rayDir - 90) * PI / 180;
+		var newX = distance * Math.cos(rad);
+		var newY = distance * Math.sin(rad);
+
+		line(player.x, player.y, player.x + newX, player.y + newY);
+
+		// TODO Draw the box of the correct height in the bottom screen
+
+
+	}
+	pop();
 }
 
 // Function to get player direction
