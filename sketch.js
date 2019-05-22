@@ -37,7 +37,8 @@ var form = {
 	distanceSlider: null,
 	fovSlider: null,
 	rayDensitySlider: null,
-	mouseActive: null
+	mouseActive: null,
+	fisheyeActive: null,
 };
 
 // Min and Max of both top and bottom
@@ -107,6 +108,11 @@ function setup()
 	form.mouseActive = createCheckbox("Use mouse", mouseActive);
 	form.mouseActive.changed(checkIfMouseActive);
 	form.mouseActive.position(600, 15);
+
+	// Configuring mouse movement
+	form.fisheyeActive = createCheckbox("Toggle Fisheye View", fisheye);
+	form.fisheyeActive.changed(checkIfFisheye);
+	form.fisheyeActive.position(750, 15);
 
 	// Creating a slider for speed
 	createP('Speed').position(600, 50);
@@ -303,6 +309,13 @@ function drawRays()
 		// Adjust for fisheye after drawing the lines
 		if(!fisheye)
 		{
+			// Get the difference between ray angle and viewing angle
+			var dirDiff = (i - (player.fov/2)) * PI / 180;
+
+			
+			distance = ( distance < player.sight ? distance * Math.cos(dirDiff) : distance);
+
+
 			// var dirDiff = (rayDir - player.dir);
 			// // console.log(rayDir, player.dir);
 			// distance = distance * Math.cos(dirDiff);
@@ -318,6 +331,7 @@ function drawRays()
 
 		push();
 
+		// Set up the colour to draw it with
 		fill('rgba(255, 255, 255, ' + boxOpacity + ")");
 		stroke('rgba(255, 255, 255, ' + boxOpacity + ")");
 
@@ -500,4 +514,9 @@ function clearFirstPerson()
 	rect(specs.bot.x.min, specs.bot.y.min, specs.bot.x.max, specs.bot.y.max);
 	
 	pop()
+}
+
+function checkIfFisheye()
+{
+	fisheye = !fisheye;
 }
