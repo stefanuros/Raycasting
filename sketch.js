@@ -303,9 +303,9 @@ function drawRays()
 		// Adjust for fisheye after drawing the lines
 		if(!fisheye)
 		{
-			// var dirDiff = Math.abs(rayDir - player.dir);
+			// var dirDiff = (rayDir - player.dir);
 			// // console.log(rayDir, player.dir);
-			// distance = distance * Math.abs(Math.cos(dirDiff));
+			// distance = distance * Math.cos(dirDiff);
 		}
 
 		// Get the x coordinate
