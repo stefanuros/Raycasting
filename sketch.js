@@ -7,6 +7,9 @@ var mouseActive = function() {
 	return check;
 }();
 
+// Fisheye toggle
+var fisheye = false;
+
 var player = {
 	// The position of the player
 	x: 100,
@@ -138,6 +141,9 @@ function draw()
 	// Clear screen
 	background(15);
 
+	// Resetting the first person view
+	clearFirstPerson();
+
 	// Drawing the rays
 	drawRays();
 
@@ -152,8 +158,6 @@ function draw()
 	getPlayerMovement();
 	drawPlayer();
 
-	// Drawing the first person view
-	drawFirstPerson();
 
 	// Draw dividing line
 	stroke(255);
@@ -256,12 +260,15 @@ function drawRays()
 	stroke(255, 0, 0);
 	point(player.x, player.y);
 	pop();
-	push();
 
 	push();
 
 	// Get starting dir for rays
 	var startDir = player.dir - (player.fov / 2);
+
+	// Calculate the box width and y value
+	var boxWidth = specs.total.width/(player.fov/player.fovDensity);
+	var boxY = (specs.bot.y.min + specs.bot.y.max) / 2;
 
 	// Loop through rays
 	for(var i = 0; i < player.fov; i += player.fovDensity)
@@ -280,23 +287,44 @@ function drawRays()
 		{
 			// Get the distance for that line segment
 			var tempDist = checkLineIntersection(player.x, player.y, player.x + newX, player.y + newY, terrain[t][0], terrain[t][1], terrain[t][2], terrain[t][3]);
-
-
+			
 			// See if its shorter than the current line segment
 			distance = ( tempDist < distance ? tempDist : distance );
 		}
-
+		
 		newX = distance * Math.cos(rad);
 		newY = distance * Math.sin(rad);
-
+		
 		// Draw the line in the right direction to the max distance
 		stroke('rgba(255,0,0,0.25)');
-
+		
 		line(player.x, player.y, player.x + newX, player.y + newY);
 
-		// TODO Draw the box of the correct height in the bottom screen
+		// Adjust for fisheye after drawing the lines
+		if(!fisheye)
+		{
+			// var dirDiff = Math.abs(rayDir - player.dir);
+			// // console.log(rayDir, player.dir);
+			// distance = distance * Math.abs(Math.cos(dirDiff));
+		}
 
+		// Get the x coordinate
+		var boxX = 0 + (boxWidth * (i / player.fovDensity));
 
+		// Get the box height
+		var boxHeight = ((1 - (distance/player.sight)) * (specs.bot.y.max - specs.bot.y.min));
+		// Get the colour of the box
+		var boxOpacity = parseFloat(1 - (distance/player.sight));
+
+		push();
+
+		fill('rgba(255, 255, 255, ' + boxOpacity + ")");
+		stroke('rgba(255, 255, 255, ' + boxOpacity + ")");
+
+		// Draw the box
+		rect(boxX, boxY-(boxHeight/2), boxWidth, boxHeight);
+
+		pop();
 	}
 	pop();
 }
@@ -391,7 +419,7 @@ function getPlayerMovement()
 		player.dir += player.turnSpeed * 1;
 
 		// Bring it back in a circle
-		player.dir = ( player.dir == 271 ? -90 : player.dir );
+		player.dir = ( player.dir > 270 ? -90 : player.dir );
 	}
 
 	// DOWN
@@ -409,7 +437,7 @@ function getPlayerMovement()
 		player.dir -= player.turnSpeed * 1;
 
 		// Bring it back in a circle
-		player.dir = ( player.dir == -91 ? 270 : player.dir );
+		player.dir = ( player.dir < -90 ? 270 : player.dir );
 	}
 
 	// Dont change position if player is near mouse to prevent jittering
@@ -433,6 +461,7 @@ function resetPlayer()
 // Function to draw the player
 function drawPlayer()
 {
+	push();
 	// Move to the player
 	translate(Math.floor(player.x), Math.floor(player.y));
 	
@@ -462,7 +491,7 @@ function drawPlayer()
 }
 
 // Function that draws the first person view
-function drawFirstPerson()
+function clearFirstPerson()
 {
 	push();
 
