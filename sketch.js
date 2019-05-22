@@ -107,27 +107,27 @@ function setup()
 
 	// Creating a slider for speed
 	createP('Speed').position(600, 50);
-	form.speedSlider = createSlider(1, 3, 1, 1);
+	form.speedSlider = createSlider(1, 3, 2, 1);
 	form.speedSlider.position(450, 65);
 	
 	// Creating a slider for turning speed
 	createP('Turning Speed').position(600, 100);
-	form.turningSlider = createSlider(1, 3, 1, 1);
+	form.turningSlider = createSlider(1, 5, 3, 1);
 	form.turningSlider.position(450, 115);
 
 	// Creating a slider for distance
 	createP('Distance').position(600, 150);
-	form.distanceSlider = createSlider(50, 400, 100, 1);
+	form.distanceSlider = createSlider(50, 400, 300, 1);
 	form.distanceSlider.position(450, 165);
 
 	// Creating a slider for field of view
 	createP('Field of View').position(600, 200);
-	form.fovSlider = createSlider(60, 120, 90, 1);
+	form.fovSlider = createSlider(0, 360, 90, 1);
 	form.fovSlider.position(450, 215);
 
 	// Creating a slider for ray density
 	createP('Ray Density').position(600, 250);
-	form.rayDensitySlider = createSlider(1, 5, 1, 1);
+	form.rayDensitySlider = createSlider(1, 10, 1, 1);
 	form.rayDensitySlider.position(450, 265);
 }
 
@@ -162,6 +162,57 @@ function draw()
 	// Get the player speed from the slider
 	getSliderInfo();
 }
+
+// Function for checking intersection of 2 lines. Returns distance
+function checkLineIntersection(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
+	// if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
+	var denominator, a, b, numerator1, numerator2, result = {
+		x: null,
+		y: null,
+		onLine1: false,
+		onLine2: false
+	};
+	denominator = ((line2EndY - line2StartY) * (line1EndX - line1StartX)) - ((line2EndX - line2StartX) * (line1EndY - line1StartY));
+	// If lines are parallel, return null so it can be fixed later
+	if (denominator == 0) {
+		// Find the distance to the parallel line
+		// Get minimum between the 2 points of the other line and the max distance
+		return min(min(dist(line1StartX, line1StartY, line2StartX, line2StartY), dist(line1StartX, line1StartY, line2EndX, line2EndY)),player.sight);
+	}
+	a = line1StartY - line2StartY;
+	b = line1StartX - line2StartX;
+	numerator1 = ((line2EndX - line2StartX) * a) - ((line2EndY - line2StartY) * b);
+	numerator2 = ((line1EndX - line1StartX) * a) - ((line1EndY - line1StartY) * b);
+	a = numerator1 / denominator;
+	b = numerator2 / denominator;
+
+	// if we cast these lines infinitely in both directions, they intersect here:
+	result.x = line1StartX + (a * (line1EndX - line1StartX));
+	result.y = line1StartY + (a * (line1EndY - line1StartY));
+/*
+		// it is worth noting that this should be the same as:
+		x = line2StartX + (b * (line2EndX - line2StartX));
+		y = line2StartX + (b * (line2EndY - line2StartY));
+		*/
+	// if line1 is a segment and line2 is infinite, they intersect if:
+	if (a > 0 && a < 1) {
+		result.onLine1 = true;
+	}
+	// if line2 is a segment and line1 is infinite, they intersect if:
+	if (b > 0 && b < 1) {
+		result.onLine2 = true;
+	}
+
+	// If they intersect, return the coords
+	if(result.onLine1 && result.onLine2)
+	{
+		return dist(line1StartX, line1StartY, result.x, result.y);
+	}
+	else{
+		// Doesnt intersect so make it max distance
+		return player.sight;
+	}
+};
 
 // Getting info from sliders
 function getSliderInfo()
@@ -221,18 +272,25 @@ function drawRays()
 		// The variable that keeps track of how far to draw the ray
 		var distance = player.sight;
 
-		for(var t = 0; t < terrain.length; t++)
-		{
-
-			// TODO get the distance to this line
-		}
-
-		// Draw the line in the right direction to the max distance
-		stroke('rgba(255,0,0,0.25)');
-
 		var rad = (rayDir - 90) * PI / 180;
 		var newX = distance * Math.cos(rad);
 		var newY = distance * Math.sin(rad);
+
+		for(var t = 0; t < terrain.length; t++)
+		{
+			// Get the distance for that line segment
+			var tempDist = checkLineIntersection(player.x, player.y, player.x + newX, player.y + newY, terrain[t][0], terrain[t][1], terrain[t][2], terrain[t][3]);
+
+
+			// See if its shorter than the current line segment
+			distance = ( tempDist < distance ? tempDist : distance );
+		}
+
+		newX = distance * Math.cos(rad);
+		newY = distance * Math.sin(rad);
+
+		// Draw the line in the right direction to the max distance
+		stroke('rgba(255,0,0,0.25)');
 
 		line(player.x, player.y, player.x + newX, player.y + newY);
 
