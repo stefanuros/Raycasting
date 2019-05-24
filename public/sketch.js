@@ -102,42 +102,42 @@ function setup()
 	// Create the reset player button
 	form.resetPlayerButton = createButton("Reset Player");
 	form.resetPlayerButton.mousePressed(resetPlayer);
-	form.resetPlayerButton.position(450, 15);
+	form.resetPlayerButton.position(450, 65);
 
 	// Configuring mouse movement
 	form.mouseActive = createCheckbox("Use mouse", mouseActive);
 	form.mouseActive.changed(checkIfMouseActive);
-	form.mouseActive.position(600, 15);
+	form.mouseActive.position(600, 65);
 
 	// Configuring mouse movement
 	form.fisheyeActive = createCheckbox("Toggle Fisheye View", fisheye);
 	form.fisheyeActive.changed(checkIfFisheye);
-	form.fisheyeActive.position(750, 15);
+	form.fisheyeActive.position(750, 65);
 
 	// Creating a slider for speed
-	createP('Speed').position(600, 50);
+	createP('Speed').position(600, 100);
 	form.speedSlider = createSlider(1, 3, 2, 1);
-	form.speedSlider.position(450, 65);
+	form.speedSlider.position(450, 115);
 	
 	// Creating a slider for turning speed
-	createP('Turning Speed').position(600, 100);
+	createP('Turning Speed').position(600, 150);
 	form.turningSlider = createSlider(1, 5, 3, 1);
-	form.turningSlider.position(450, 115);
+	form.turningSlider.position(450, 165);
 
 	// Creating a slider for distance
-	createP('Distance').position(600, 150);
+	createP('Distance').position(600, 200);
 	form.distanceSlider = createSlider(50, 400, 300, 1);
-	form.distanceSlider.position(450, 165);
+	form.distanceSlider.position(450, 215);
 
 	// Creating a slider for field of view
-	createP('Field of View').position(600, 200);
+	createP('Field of View').position(600, 250);
 	form.fovSlider = createSlider(0, 360, 90, 1);
-	form.fovSlider.position(450, 215);
+	form.fovSlider.position(450, 265);
 
 	// Creating a slider for ray density
-	createP('Ray Density').position(600, 250);
+	createP('Ray Density').position(600, 300);
 	form.rayDensitySlider = createSlider(1, 10, 1, 1);
-	form.rayDensitySlider.position(450, 265);
+	form.rayDensitySlider.position(450, 315);
 }
 
 // Loop
