@@ -1,4 +1,4 @@
-#Raycasting Experiment
+# Raycasting Experiment
 
 This little project was created so that I could learn about how 3D graphics were
 generated before 3D graphics were able to be generated. My muse was 
