@@ -45,6 +45,7 @@ red ray.
 ![Ray Density Example](/assets/rayDensity.png)
 
 Shown below is a gif of the movement and how the top and bottom views correspond.
+
 ![Moving Example](/assets/example.gif)
 
 A longer example exists in the assets folder
